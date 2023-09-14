@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataTables Example with JSON Data</title>
+
+  <!-- jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+  <!-- jQuery Form Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
+</head>
+
+<body>
+  <table id="dataTable" class="display" style="width:100%">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First name4</th>
+        <th>last name</th>
+        <th>DOB</th>
+        <th>address</th>
+        <th>gender</th>
+         <th>cdate</th>
+          <th>aadhar</th>
+           <th>status</th>
+            <th>last upadted date</th>
+             <th>last u user</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- JSON data will be inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    $(document).ready(function () {
+      // Sample JSON data
+     $.ajax({
+          url: "http://localhost:8082/customers", // Replace with your API URL
+          method: "GET",
+          success: function(jsonData) {
+        	  $('#dataTable').DataTable({
+        	        data: jsonData,
+        	        columns: [
+        	          {data: 'cust_id'},
+        	          {data: 'cust_firstname'},
+        	          {data: 'cust_lastname'},
+        	          {data: 'cust_dob'},
+        	          {data: 'cust_address'},
+        	          {data: 'cust_gender'},
+        	          {data:'cust_cdate'},
+        	          {data:'cust_aadhar'},
+        	          {data:'cust_status'},
+        	          {data:'cust_ludate'},
+        	          {data:'cust_luuser'}
+        	        ],
+        	        pageLength: 5 
+        	      }); // Display the response in a div
+          },
+          error: function(error) {
+            console.error("Error:", error);
+          }
+        });
+
+      // Initialize DataTable
+      
+    });
+  </script>
+</body>
+
+</html>
