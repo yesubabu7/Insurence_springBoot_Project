@@ -23,7 +23,7 @@ public class InsuranceController {
 	@RequestMapping(value = "/customers", method = RequestMethod.GET)
 	public List<Customers> getAllCustomer() {
 
-		System.out.println("ajay");
+		
 		return insService.getAllCusomers();
 	}
 }
