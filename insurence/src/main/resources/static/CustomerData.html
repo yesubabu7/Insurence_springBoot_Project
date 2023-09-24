@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Form</title>
+</head>
+<body>
+    <form id="customerForm">
+        <input type="text" name="cust_fname" placeholder="First Name">
+        <input type="text" name="cust_lname" placeholder="Last Name">
+        <input type="date" name="cust_dob" placeholder="Date of Birth">
+        <input type="text" name="cust_address" placeholder="Address">
+        <input type="text" name="cust_gender" placeholder="Gender">
+        <input type="date" name="cust_cdate" placeholder="Creation Date">
+        <input type="number" name="cust_aadhar" placeholder="Aadhar Number">
+        <input type="text" name="cust_status" placeholder="Status">
+        <input type="date" name="cust_luudate" placeholder="Last Updated Date">
+        <input type="number" name="cust_luuser" placeholder="Last Updated User">
+        <!-- Add other form fields as needed -->
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#customerForm").submit(function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Serialize the form data as an object
+                var formData = {};
+                $(this).serializeArray().forEach(function (field) {
+                    formData[field.name] = field.value;
+                });
+
+                // Send AJAX POST request with the JSON data
+                $.ajax({
+                    url: "/saveCustomerData",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(formData),
+                    success: function (response) {
+                        console.log("Customer data saved successfully:", response);
+                    },
+                    error: function (error) {
+                        console.error("Error saving customer data:", error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

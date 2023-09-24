@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Documents</title>
+</head>
+<body>
+    <h1>Upload Documents</h1>
+    
+    <form id="documentForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput">
+        <button type="button" id="uploadButton">Upload Document</button>
+    </form>
+
+    <div id="uploadMessage"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#uploadButton").click(function () {
+                var formData = new FormData();
+                formData.append("file", $("#fileInput")[0].files[0]);
+
+                $.ajax({
+                    url: "/uploadDocument",
+                    method: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        $("#uploadMessage").text("Document uploaded successfully.");
+                    },
+                    error: function (error) {
+                        $("#uploadMessage").text("Error uploading document: " + error.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
