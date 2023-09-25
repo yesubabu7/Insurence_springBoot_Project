@@ -9,7 +9,9 @@
     
     <form id="documentForm" enctype="multipart/form-data">
         <input type="file" name="file" id="fileInput">
-        <button type="button" id="uploadButton">Upload Document</button>
+        <button type="button" id="addFileButton">Add File</button> <!-- Button to add another file input -->
+        
+        <button type="button" class="uploadButton">Upload Document</button>
     </form>
 
     <div id="uploadMessage"></div>
@@ -17,23 +19,35 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
-            $("#uploadButton").click(function () {
-                var formData = new FormData();
-                formData.append("file", $("#fileInput")[0].files[0]);
+            $("#addFileButton").click(function () {
+                // Replace the existing file input with a new one
+                $("#fileInput").replaceWith('<input type="file" name="file" id="fileInput">');
+            });
 
-                $.ajax({
-                    url: "/uploadDocument",
-                    method: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (response) {
-                        $("#uploadMessage").text("Document uploaded successfully.");
-                    },
-                    error: function (error) {
-                        $("#uploadMessage").text("Error uploading document: " + error.responseText);
-                    }
-                });
+            $(".uploadButton").click(function () {
+                var formData = new FormData();
+                var fileInput = $("#fileInput")[0]; // Get the current file input
+
+                // Check if a file is selected
+                if (fileInput.files.length > 0) {
+                    formData.append("file", fileInput.files[0]);
+
+                    $.ajax({
+                        url: "/uploadDocument",
+                        method: "POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            $("#uploadMessage").text("Document uploaded successfully.");
+                        },
+                        error: function (error) {
+                            $("#uploadMessage").text("Error uploading document: " + error.responseText);
+                        }
+                    });
+                } else {
+                    $("#uploadMessage").text("No file selected.");
+                }
             });
         });
     </script>
