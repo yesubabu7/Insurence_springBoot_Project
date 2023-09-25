@@ -133,4 +133,37 @@ public class InsurenceRepository implements RepositoryInterface {
 		return insurenceDao.checkCredentials(lc);
 	}
 
+	
+	
+	
+	public boolean userChecking(Long userId, String userName, String password, List<UserData> userDataList) {
+	    for (UserData userData : userDataList) {
+	        if (userName.equals(userData.getUserName()) && password.equals(userData.getUserPwd()) && userData.getUserId().equals(userId)) {
+	            return true; // Found a matching user
+	        }
+	    }
+	    return false; // No matching user found
+	}
+	
+	
+	
+
+	public String updateCustomersData(List<CustomerData> updatedCustomerData) {
+		
+		insurenceDao.updateCustomersData(updatedCustomerData);
+		
+		return "updated Succesfully";
+	}
+	
+	
+	
+
+	public String UpdateFamilyMedicalHistory(List<FamilyMedicalHistoryData> updatedFamilyMedicalHistoryData) {
+		
+		insurenceDao.updateFamilyMedicalHistory(updatedFamilyMedicalHistoryData);
+
+		return "";
+	}
+
+
 }

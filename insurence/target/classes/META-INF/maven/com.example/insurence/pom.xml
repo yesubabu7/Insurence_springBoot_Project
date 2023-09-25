@@ -38,7 +38,7 @@
 		</dependency>
 		
 		
-	<dependency>
+		<dependency>
       <groupId>javax.mail</groupId>
       <artifactId>javax.mail-api</artifactId>
       <version>1.6.2</version>
@@ -49,14 +49,8 @@
       <artifactId>javax.mail</artifactId>
       <version>1.6.2</version>
     </dependency>
-		
-		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		
-		
+    
+    
 	</dependencies>
 
 	<build>

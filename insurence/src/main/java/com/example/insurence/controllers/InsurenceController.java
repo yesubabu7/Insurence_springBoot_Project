@@ -37,14 +37,21 @@ public class InsurenceController {
 																					// directory
 
 	InsurenceRepository insurenceRepository;
-	private HttpSession httpSession;
+	private HttpSession session;
+	
+	List<UserData> UserDataList;
 
 	@Autowired
 	public InsurenceController(InsurenceRepository insurenceRepository, HttpSession httpSession) {
 
 		this.insurenceRepository = insurenceRepository;
-		this.httpSession = httpSession;
+		this.session = httpSession;
 	}
+	
+	
+	
+	
+	
 
 	@PostMapping("/saveCustomerData")
 	@ResponseBody
@@ -56,6 +63,9 @@ public class InsurenceController {
 
 		return "Customer data saved successfully";
 	}
+	
+	
+	
 
 	@PostMapping("/saveFamilyMedicalHistory")
 	public ResponseEntity<String> saveFamilyMedicalHistory(@RequestBody FamilyMedicalHistoryData data) {
@@ -64,6 +74,8 @@ public class InsurenceController {
 		return null;
 
 	}
+	
+	
 
 	@RequestMapping(value = "/Customers", method = RequestMethod.GET)
 
@@ -73,14 +85,72 @@ public class InsurenceController {
 
 		return insurenceRepository.getAllCustomers();
 	}
+	
+	
+	
+	@RequestMapping(value = "/UpdateCustomers", method = RequestMethod.POST)
+
+	public String  UpdateCustomers(@RequestBody List<CustomerData> updatedCustomerData ) {
+
+		
+
+		String check=insurenceRepository.updateCustomersData(updatedCustomerData);
+		
+		return check;
+	}
+	
+	
+	
+	
+	
+	@RequestMapping(value = "/UpdateFamilyMedicalHistory", method = RequestMethod.POST)
+
+	public String  UpdateFamilyMedicalHistory(@RequestBody List<FamilyMedicalHistoryData> UpdatedFamilyMedicalHistoryData) {
+
+		
+
+		String check=insurenceRepository.UpdateFamilyMedicalHistory(UpdatedFamilyMedicalHistoryData);
+		
+		return check;
+	}
+	
+	
 
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public List<UserData> getAllUsers() {
 
 		System.out.println("users");
 
-		return insurenceRepository.getAllUsers();
+		UserDataList= insurenceRepository.getAllUsers();
+		
+		return UserDataList;
 	}
+	
+	
+	
+	
+	
+	
+	@RequestMapping(value = "/UserLogin", method = RequestMethod.GET)
+
+	public String userCredinitial(@RequestParam("customerId") Long userId,@RequestParam("username") String  userName,@RequestParam("password") String password) {
+		
+		
+		UserDataList= insurenceRepository.getAllUsers();
+		boolean b=insurenceRepository.userChecking(userId,userName,password,UserDataList);
+		if(b) {
+			session.setAttribute("userId",userId);
+			
+		}
+		
+		System.out.println("customers");
+
+		return "";
+	}
+	
+	
+	
+	
 
 	@RequestMapping(value = "/FamilyMedicalData", method = RequestMethod.GET)
 	public List<FamilyMedicalHistoryData> getFamilyMedicalData() {
@@ -88,10 +158,17 @@ public class InsurenceController {
 		System.out.println("medical");
 
 		return insurenceRepository.getFamilyMedicalData();
+		
+		
 	}
+	
+	
+	
 
+	
+	
 	@PostMapping("/uploadDocument")
-	public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<String> uploadDocument(@RequestParam("file") MultipartFile file,@RequestParam("customerId") Long id,@RequestParam("userId") Long userId) {
 		try {
 			// Validate and process the uploaded file
 			if (file.isEmpty()) {
@@ -99,6 +176,8 @@ public class InsurenceController {
 			}
 
 			String fileName = insurenceRepository.uploadFile(file); // Implement this method
+			session.setAttribute("custId",id);
+
 
 			// You can return a success message or the file name
 			return new ResponseEntity<>("File uploaded successfully. File name: " + fileName, HttpStatus.OK);
@@ -106,6 +185,10 @@ public class InsurenceController {
 			return new ResponseEntity<>("Error uploading file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	
+	
 
 	@Value("${pdfFilesPath}") // Replace with the actual path to your PDF files
 	private String pdfFilesPath;
@@ -151,26 +234,32 @@ public class InsurenceController {
 		return "loginPage";
 	}
 
+	
+	
 	@GetMapping("/email")
 	@ResponseBody
 	public String email(@RequestParam("to") String to_mail) {
 		String email = to_mail;
-		httpSession.setAttribute("email", email);
+		session.setAttribute("email", email);
 		// storing generated otp
 		int OTP = insurenceRepository.sendmail(to_mail);
-		httpSession.setAttribute("OTP", OTP);
+		session.setAttribute("OTP", OTP);
 
 		return "Email Sent Successfully";
 
 	}
+	
+	
+	
+	
 
 	@PostMapping(value = "/validateOTP")
 	public ModelAndView validateOTP(@RequestParam("otp") String otp, Model model) {
 		model.addAttribute("to", "");
 		int OTP = Integer.parseInt(otp);
 		ModelAndView mav = new ModelAndView();
-		int originalOtp = (Integer) httpSession.getAttribute("OTP");
-		String email = (String) httpSession.getAttribute("email");
+		int originalOtp = (Integer) session.getAttribute("OTP");
+		String email = (String) session.getAttribute("email");
 		// checking the otp sent by the user if true returning reset page else need to stay in the same page with error
 		// msg
 		if (originalOtp == OTP) {
@@ -183,6 +272,10 @@ public class InsurenceController {
 		mav.addObject("email", email);
 		return mav;
 	}
+	
+	
+	
+	
 
 	@PostMapping("/reset")
 	public String reset(Model model, @RequestParam("email") String email, @RequestParam("pwd") String pwd,
