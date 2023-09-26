@@ -1,5 +1,7 @@
 package com.example.insurence.repositories;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -19,20 +21,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.insurence.contracts.RepositoryInterface;
 import com.example.insurence.daos.InsurenceDao;
+import com.example.insurence.models.AuthUtils;
 import com.example.insurence.models.CustomerData;
 import com.example.insurence.models.FamilyMedicalHistoryData;
-import com.example.insurence.models.LoginClass;
 import com.example.insurence.models.UserData;
+import com.example.insurence.models.UserLoginValidation;
+
+import jakarta.servlet.http.HttpSession;
 
 @Repository
 public class InsurenceRepository implements RepositoryInterface {
 
 	private InsurenceDao insurenceDao;
+	HttpSession session;
 
 	@Autowired
-	public InsurenceRepository(InsurenceDao insurenceDao) {
+	public InsurenceRepository(InsurenceDao insurenceDao, HttpSession session) {
 		this.insurenceDao = insurenceDao;
+		this.session = session;
+	}
 
+	public Long saveUserData(String userName, String password) {
+
+		long id = insurenceDao.saveUserData(userName, password);
+		return id;
 	}
 
 	public void saveCustomerData(CustomerData customerData) {
@@ -128,42 +140,69 @@ public class InsurenceRepository implements RepositoryInterface {
 		return insurenceDao.resetpwd(email, pwd);
 	}
 
-	public int checkCredentials(LoginClass lc) {
+	public boolean userChecking(String userName, String password, List<UserData> userDataList) {
+		for (UserData userData : userDataList) {
 
-		return insurenceDao.checkCredentials(lc);
-	}
+			// checking username and password
+			if (userName.equals(userData.getUserName()) && password.equals(userData.getUserPwd())) {
+				System.out.println(userData.getUserPwd());
+				System.out.println(userData.getUserName());
 
-	
-	
-	
-	public boolean userChecking(Long userId, String userName, String password, List<UserData> userDataList) {
-	    for (UserData userData : userDataList) {
-	        if (userName.equals(userData.getUserName()) && password.equals(userData.getUserPwd()) && userData.getUserId().equals(userId)) {
-	            return true; // Found a matching user
-	        }
-	    }
-	    return false; // No matching user found
-	}
-	
-	
-	
+				session.setAttribute("userId", userData.getUserId());
+
+				// generate randome key for security and store in session
+				String key = AuthUtils.generateKey();
+				session.setAttribute("key", key);
+
+				Long userId = userData.getUserId();
+
+				UserLoginValidation user = insurenceDao.getLoginTimeRange(userId);
+
+				Date currentDate = new Date();
+				System.out.println("checked key");
+
+				// Check if the current date and time falls within the login time range
+				// Format the current date to match the login date format
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String formattedCurrentDate = dateFormat.format(currentDate);
+
+				// Get the login time range as strings
+				String loginTimeFrom = dateFormat.format(user.getLoginTimeFrom());
+				String loginTimeTo = dateFormat.format(user.getLoginTimeTo());
+
+				System.out.println("current Date" + formattedCurrentDate);
+
+				System.out.println("loginDate to Date" + loginTimeTo);
+
+				// checking login time is expired or not
+				if (formattedCurrentDate.compareTo(loginTimeFrom) >= 0
+						&& formattedCurrentDate.compareTo(loginTimeTo) <= 0) {
+					// Your code here
+
+					System.out.println("iam inside time checking");
+
+					System.out.println("Time checking");
+					return true;
+
+				}
+			}
+
+		}
+		return false;
+	} // No matching user found
 
 	public String updateCustomersData(List<CustomerData> updatedCustomerData) {
-		
+
 		insurenceDao.updateCustomersData(updatedCustomerData);
-		
+
 		return "updated Succesfully";
 	}
-	
-	
-	
 
 	public String UpdateFamilyMedicalHistory(List<FamilyMedicalHistoryData> updatedFamilyMedicalHistoryData) {
-		
+
 		insurenceDao.updateFamilyMedicalHistory(updatedFamilyMedicalHistoryData);
 
-		return "";
+		return "updated succesfully";
 	}
-
 
 }
