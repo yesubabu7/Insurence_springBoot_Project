@@ -96,15 +96,41 @@ public class InsurenceRepository implements RepositoryInterface {
 	}
 
 	private static void sendEmail(String to, String subject, String body) {
-		String host = "smtp.gmail.com";
-		int port = 587;
+		
 		String username = "avengersbtrs@gmail.com";
 		String password = "urpr twig ffeb uqlx";
+		
+		
+		String host = "smtp.gmail.com";
+		int port = 587;
+		
+		/*When you specify the SMTP server's address (hostname) as "smtp.gmail.com",
+		 *  you are essentially telling your code to connect to Gmail's SMTP server for sending
+		 *   emails. This is the server that will handle the transmission of your email message 
+		 *   to its destination, and it's the location to which you send your email data for
+		 *    processing and delivery.
+		 */
+		
 
 		// Set properties
 		Properties props = new Properties();
 		props.put("mail.smtp.auth", "true");
+		
+		
+		/*
+		 * Purpose: Enabling SMTP authentication is essential for ensuring that only authorized users 
+		 * can send 
+		 *emails through the SMTP server. It helps prevent unauthorized access and misuse of the
+		 * SMTP server.
+		 */
 		props.put("mail.smtp.starttls.enable", "true");
+		
+		/*
+		 * Purpose: Enabling STARTTLS is crucial for secure email transmission. It ensures that the email 
+		 * communication between your client and the SMTP server is encrypted, making 
+		 * it more resistant to interception or eavesdropping.
+		 */
+		
 		props.put("mail.smtp.host", host);
 		props.put("mail.smtp.port", port);
 

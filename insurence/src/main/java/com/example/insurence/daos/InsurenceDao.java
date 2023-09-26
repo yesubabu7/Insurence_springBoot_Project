@@ -205,10 +205,3 @@ public class InsurenceDao implements DaoInterface {
 
 
 
-/*CREATE TABLE user_login_validation (
-    user_id BIGINT PRIMARY KEY,
-    login_time_from TIMESTAMP,
-    login_time_to TIMESTAMP
-);
-
-userTimeFrom=2023-09-26 15:20:008/*
